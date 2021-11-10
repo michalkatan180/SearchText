@@ -1,0 +1,7 @@
+D:\Jobs\SearchText\SearchText\bin\Debug\SearchText.exe.config
+D:\Jobs\SearchText\SearchText\bin\Debug\SearchText.exe
+D:\Jobs\SearchText\SearchText\bin\Debug\SearchText.pdb
+D:\Jobs\SearchText\SearchText\obj\Debug\SearchText.csprojAssemblyReference.cache
+D:\Jobs\SearchText\SearchText\obj\Debug\SearchText.csproj.CoreCompileInputs.cache
+D:\Jobs\SearchText\SearchText\obj\Debug\SearchText.exe
+D:\Jobs\SearchText\SearchText\obj\Debug\SearchText.pdb
