@@ -15,14 +15,19 @@ namespace SearchText
             TextFile t = new TextFile("../../../dickens.txt");
             //t.Print();
             //Console.WriteLine(t.GetNumberOfAllLines());//כולל שורות ריקות שבין הקטעים
-            //Console.WriteLine(t.GetNumberOfLines());//לא כולל שורות ריקות שבין הקטעים 
-            //Console.WriteLine(t.GetNumberOfWords());
-            //Console.WriteLine(t.GetUniqueWordsNumber());
+            Console.WriteLine(t.GetNumberOfLines());//לא כולל שורות ריקות שבין הקטעים 
+           Console.WriteLine(t.GetNumberOfWords());
+            Console.WriteLine(t.GetUniqueWordsNumber());
             //Console.WriteLine("Max sentence length: " + t.GetMaxSentenceLen());
             //Console.WriteLine("Average sentence length: " + t.GetAvgSentenceLen());
             //Console.WriteLine("The most popular word is: " + t.GetPopularWord());
-            //Console.WriteLine("The most popular word2 is: " + t.GetPopularWord2());
-            Console.WriteLine(t.GetTheLongestWithoutK());
+            //Console.WriteLine(t.GetTheLongestWithoutK());
+            Console.WriteLine("The biggest number:"+t.GetTheBiggestNumber());
+            
+            /*Dictionary<string, int> colors = t.GetColors();
+            foreach(var c in colors)
+                Console.WriteLine("{0}: {1}",c.Key,c.Value);
+            if (colors.Count == 0) Console.WriteLine("No colors");*/
 
             Console.ReadLine();
         }
