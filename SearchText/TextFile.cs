@@ -94,12 +94,13 @@ namespace SearchText
                 //גם תו בודד (מכל סוג) שלפניו יש רווח, יחשב כמילה
 
                 for (int i = 0; i < result.Length; i++)
-                    if (result[i] != ' ' && (i == 0 || result[i - 1] == ' '))
+                    if (result[i] != ' ' && (i == 0 || result[i - 1] == ' ' || result[i - 1] == '-'))
                         cnt++;//תחילת מילה חדשה
 
                 //דרך נוספת, ע"י שימוש בפונקצייה של סטרינג
                 //יכולה לשמש במקום הלולאה שמעל
-                //string[] words = result.Split(' ');
+                //char[] splitchars = new char[] { ' ', '-', ',' };
+                //string[] words = result.Split(splitchars, StringSplitOptions.RemoveEmptyEntries); 
                 //for (int i = 0; i < words.Length; i++)
                 //    if (words[i] != "") cnt++;//מפני שיתכנו רווחים רצופים
 
@@ -122,13 +123,13 @@ namespace SearchText
                 Dictionary<string, int> dic = new Dictionary<string, int>();
 
                 for (int i = 0; i < result.Length;)
-                    if (result[i] != ' ' && (i == 0 || result[i - 1] == ' '))//תחילת מילה חדשה
+                    if (result[i] != ' ' && (i == 0 || result[i - 1] == ' ' || result[i - 1] == '-'))//תחילת מילה חדשה
                     {
                         //גם תו בודד (מכל סוג) שלפניו יש רווח, יחשב כמילה
                         int j = i + 1;
                         string word = result[i] + "";
 
-                        for (; j < result.Length && result[j] != ' '; j++)
+                        for (; j < result.Length && result[j] != ' ' && result[j] != '-'; j++)
                             word += result[j];
 
                         //Was=was!
@@ -141,19 +142,6 @@ namespace SearchText
                         i = j + 1; //הלולאה הפנימית נעצרה כי הגיעה לרווח, או לסוף השורה
                     }
                     else i++;
-
-                //דרך נוספת, ע"י שימוש בפונקצייה של סטרינג
-                //יכולה לשמש במקום הלולאה שמעל
-                //string[] words = result.Split(' ');
-                //for (int i = 0; i < words.Length; i++)
-                //    if (words[i] != "")
-                //    {
-                //        string w = words[i];
-                //        w = GetWithoutPunctuation(w);//הערה1
-                //        w = w.ToUpper(); //הערה2
-                //        if (!dic.ContainsKey(w)) dic.Add(w, 1);
-                //        else dic[w]++;
-                //    }
 
                 for (int i = 0; i < dic.Count; i++)
                     if (dic.ElementAt(i).Value == 1) cnt++;
@@ -191,11 +179,17 @@ namespace SearchText
         //קבל את כמות המילים-------------
         private int GetWordsCount(string line)
         {
-            int cnt = 0;
+            //דרך א
+            /*int cnt = 0;
             for (int i = 0; i < line.Length; i++)
-                if (line[i] != ' ' && (i == 0 || line[i - 1] == ' '))
+                if (line[i] != ' ' && (i == 0 || line[i - 1] == ' '|| line[i - 1] == '-'))
                     cnt++;//תחילת מילה חדשה
-            return cnt;
+            return cnt;*/
+
+            //דרך ב
+            char[] splitchars = new char[] { ' ', '-', ',' };
+            string[] words = line.Split(splitchars, StringSplitOptions.RemoveEmptyEntries);
+            return words.Length;
         }
 
         //אורך המשפט הארוך ביותר
@@ -212,7 +206,6 @@ namespace SearchText
                     sentence += result[i];
                     if (result[i] == '.' || result[i] == ',' || result[i] == '!' || result[i] == '?')//סוף משפט
                     {
-                        Console.WriteLine(sentence);
                         max = Math.Max(GetWordsCount(sentence), max);
                         //max = Math.Max(sentence.Length, max);//לפי מספר תוים
                         sentence = "";
@@ -220,7 +213,6 @@ namespace SearchText
                 }
                 if (sentence != "")
                 {
-                    Console.WriteLine(sentence);
                     max = Math.Max(GetWordsCount(sentence), max);
                     //max = Math.Max(sentence.Length, max);//לפי מספר תוים                }
                 }
@@ -247,21 +239,21 @@ namespace SearchText
                     if (result[i] == '.' || result[i] == ',' || result[i] == '!' || result[i] == '?')//סוף משפט
                     {
                         sum += GetWordsCount(sentence);
-                        cnt++;
+                        cnt++; 
                         sentence = "";
                     }
                 }
                 if (sentence != "")
                 {
                     sum += GetWordsCount(sentence);
-                    cnt++;
+                   if (GetWordsCount(sentence)>0)cnt++;
                 }
             }
             catch (IOException ex)
             {
                 Console.WriteLine(ex.Message);
             }
-            if (cnt > 0) return (double)sum / cnt;
+            if (cnt > 0) return(double)sum / cnt;
             return sum;
         }
 
@@ -270,7 +262,7 @@ namespace SearchText
         {
             //גם תו בודד (מכל סוג) שלפניו יש רווח, יחשב כמילה
 
-            int cnt = 0, max = int.MinValue;
+            int max = int.MinValue;
             string po_word = "";
             Dictionary<string, int> dic = new Dictionary<string, int>();
             try
@@ -279,12 +271,12 @@ namespace SearchText
                 string result = Regex.Replace(text, @"\r\n?|\n", " ");
 
                 for (int i = 0; i < result.Length; i++)
-                    if (result[i] != ' ' && (i == 0 || result[i - 1] == ' '))//תחילת מילה חדשה
+                    if (result[i] != ' ' && (i == 0 || result[i - 1] == ' ' || result[i - 1] == '-'))//תחילת מילה חדשה
                     {
                         int j = i + 1;
                         string word = result[i] + "";
 
-                        for (; j < result.Length && result[j] != ' '; j++)
+                        for (; j < result.Length && result[j] != '-' && result[j] != ' '; j++)
                             word += result[j];
 
                         word = GetWithoutPunctuation(word);
@@ -319,17 +311,16 @@ namespace SearchText
                 string text = File.ReadAllText(path);
                 string result = Regex.Replace(text, @"\r\n?|\n", " ");
 
-                string[] words = result.Split(' ');
+                char[] splitchars = new char[] { ' ', '-', ',' };
+                string[] words = result.ToLower().Split(splitchars, StringSplitOptions.RemoveEmptyEntries);
                 for (int i = 0; i < words.Length; i++)
-                    if (words[i] != "")
+                    if (words[i].IndexOf("k") == -1) cnt++;
+                    else
                     {
-                        if (words[i].IndexOf("k") == -1) cnt++;
-                        else
-                        {
-                            max = Math.Max(max, cnt);
-                            cnt = 0;
-                        }
+                        max = Math.Max(max, cnt);
+                        cnt = 0;
                     }
+
                 max = Math.Max(max, cnt);
             }
             catch (IOException ex)
@@ -340,73 +331,71 @@ namespace SearchText
         }
 
 
-        //קבל את המספר הגדול ביותר---------------------לא סיימתי
+        //קבל את המספר הגדול ביותר
         public int GetTheBiggestNumber()
         {
+            //בהנחה שאין מספרים ברצף
+            //ואין מספרים שיש בתוכם פסיק 500,422
             int max = int.MinValue;
             string[] ones = { "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" };
             string[] teens = { "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen" };
             string[] tens = { "ten", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety" };
-            var bigscales = new Dictionary<string, int>() {
+            Dictionary<string, int> bigscales = new Dictionary<string, int>() {
                 {"hundred", 100},
                 {"hundreds", 100},
                 {"thousand", 1000},
+                {"000", 1000},//500,000
                 {"million", 1000000},
                 {"billion", 1000000000}};
+
             try
             {
                 string text = File.ReadAllText(path);
                 string result = Regex.Replace(text, @"\r\n?|\n", " ");
+                int final = 0;
 
                 char[] splitchars = new char[] { ' ', '-', ',' };
                 string[] words = result.ToLower().Split(splitchars, StringSplitOptions.RemoveEmptyEntries);
                 int res = 0;
                 int currentResult = 0;
-                int bigMultiplierValue = 1;
-                bool bigMultiplierIsActive = false;
+                int tmp;
                 bool zeroFlag = false;
                 bool intFlag = false;
                 for (int i = 0; i < words.Length; i++)
                 {
                     if (words[i] == "and") continue;
-                    int x;
-                    if (int.TryParse(words[i], out x)) intFlag = true;
-                    int tmp = currentResult;
+                    tmp = currentResult;
+                    if (int.TryParse(words[i], out int x))
+                    {
+                        currentResult = x;
+                        intFlag = true;
+                    }
                     if (bigscales.ContainsKey(words[i]))
                     {
-                        bigMultiplierValue *= bigscales[words[i]];
-                        bigMultiplierIsActive = true;
+                        if (currentResult == 0) res += bigscales[words[i]];
+                        else res += currentResult * bigscales[words[i]];
+                        currentResult = 0;
                     }
                     else
                     {
-                        if (bigMultiplierIsActive)
-                        {
-                            res += currentResult * bigMultiplierValue;
-                            currentResult = 0;
-                            bigMultiplierValue = 1;
-                            bigMultiplierIsActive = false;
-                        }
                         int n;
                         if ((n = Array.IndexOf(ones, words[i]) + 1) > 0) currentResult += n;
                         else if ((n = Array.IndexOf(teens, words[i]) + 1) > 0) currentResult += n + 10;
                         else if ((n = Array.IndexOf(tens, words[i]) + 1) > 0) currentResult += n * 10;
                         else if (words[i] == "zero") zeroFlag = true;
+
                     }
-                    if (intFlag||(currentResult == tmp && currentResult > 0) || zeroFlag)//נגמר המספר
+                    if (tmp == currentResult || intFlag || zeroFlag)//נגמר המספר
                     {
-                        int final = res + currentResult * bigMultiplierValue;
-                        Console.WriteLine("final: "+final);
-                        max = Math.Max(max, final);
+                        final = res + currentResult;
+                        if (zeroFlag || final != 0) max = Math.Max(max, final);
                         res = 0;
                         currentResult = 0;
-                        bigMultiplierValue = 1;
-                        bigMultiplierIsActive = false;
                         zeroFlag = false;
-                        intFlag = false;
                     }
                 }
-
-
+                final = res + currentResult;
+                max = Math.Max(max, final);
             }
             catch (IOException ex) { Console.WriteLine(ex.Message); }
             return max;
@@ -569,148 +558,83 @@ namespace SearchText
             {
                 string text = File.ReadAllText(path);
                 string result = Regex.Replace(text, @"\r\n?|\n", " ").ToLower();
-                string[] words = result.Split(' ');
+                char[] splitchars = new char[] { ' ', ',', '.', '!', '?', '-' };
+
+                string[] words = result.Split(splitchars, StringSplitOptions.RemoveEmptyEntries);
 
                 for (int i = 0; i < CSS_COLOR_NAMES.Length; i++)
                     CSS_COLOR_NAMES[i] = CSS_COLOR_NAMES[i].ToLower();
 
                 for (int i = 0; i < words.Length; i++)
-                    if (words[i] != "")
-                        if (Array.IndexOf(CSS_COLOR_NAMES, words[i]) != -1)
-                        {
-                            if (!dic.ContainsKey(words[i])) dic.Add(words[i], 1);
-                            else dic[words[i]]++;
-                        }
+                    if (Array.IndexOf(CSS_COLOR_NAMES, words[i]) != -1)
+                    {
+                        if (!dic.ContainsKey(words[i])) dic.Add(words[i], 1);
+                        else dic[words[i]]++;
+                    }
             }
             catch (IOException ex) { Console.WriteLine(ex.Message); }
             return dic;
         }
 
-        //קבל את שמות הדמויות
-        /*public Dictionary<string, int> GetColors()
+        //הדפס את שמות הדמויות ואת הפופולרית ביותר
+        public void PrintNames()
         {
-            string[] people =
-            {
-        "Joe",
-        "Jarvis Lorry",
-        "Jerry",
-        "Tom",
-            "",
-            "",""}
-            Dictionary<string, int> dic = new Dictionary<string, int>();
+            Dictionary<string, string> people = new Dictionary<string, string>(){
+                { "Joe" ,""},
+                { "Jarvis","Jarvis Lorry"},
+                { "Lorry","Jarvis Lorry"},
+                { "Jerry","" },
+                { "Tom","" },
+                {"Michal","Michal Katan" },
+                {"Katan","Michal Katan" }
+            };
+            Dictionary<string, int> resultNames = new Dictionary<string, int>();
             try
             {
                 string text = File.ReadAllText(path);
-                string result = Regex.Replace(text, @"\r\n?|\n", " ").ToLower();
-                string[] words = result.Split(' ');
+                string result = Regex.Replace(text, @"\r\n?|\n", " ");
+                char[] splitchars = new char[] { ' ', ',', '.', '!', '?', '-' };
 
-                for (int i = 0; i < CSS_COLOR_NAMES.Length; i++)
-                    CSS_COLOR_NAMES[i] = CSS_COLOR_NAMES[i].ToLower();
-
+                string[] words = result.Split(splitchars, StringSplitOptions.RemoveEmptyEntries);
+                int index = -1;
                 for (int i = 0; i < words.Length; i++)
-                    if (words[i] != "")
-                        if (Array.IndexOf(CSS_COLOR_NAMES, words[i]) != -1)
+                    if ((index = Array.IndexOf(people.Keys.ToArray(), words[i])) > -1)//אם זה דמות
+                    {
+                        if (i < words.Length - 1)
                         {
-                            if (!dic.ContainsKey(words[i])) dic.Add(words[i], 1);
-                            else dic[words[i]]++;
+                            //האם המילה הבאה היא המשך השם של הדמות שם משפחה+פרטי
+                            if (Math.Abs(Array.IndexOf(people.Keys.ToArray(), words[i + 1]) - index) == 1)
+                                i++;//לדלג על המשך השם
                         }
+
+                        string fullName = people.ElementAt(index).Value;
+                        if (fullName == "") fullName = people.ElementAt(index).Key;
+                        if (!resultNames.ContainsKey(fullName)) resultNames.Add(fullName, 1);
+                        else resultNames[fullName]++;
+                    }
+
+                int max = int.MinValue;
+                string max_name = "";
+                for (int i = 0; i < resultNames.Count; i++)
+                {
+                    int cnt = resultNames.ElementAt(i).Value;
+                    string name = resultNames.ElementAt(i).Key;
+                    if (cnt > max)
+                    {
+                        max = cnt;
+                        max_name = name;
+                    }
+                    Console.WriteLine("{0}: {1}", name, cnt);
+                }
+                Console.WriteLine("The popolar name is: {0} ({1}).", max_name, max);
+
             }
             catch (IOException ex) { Console.WriteLine(ex.Message); }
-            return dic;
+            //return dic;
         }
-        */
-
-        //קבל את השם הנפוץ ביותר
 
 
-        //המרת מחרוזת של מספר
-        public static int WordNumberToInt(string number)
-        {
-            //stackoverflowאת הפונקציה הזה מצאתי ב       
-            string[] ones = { "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" };
-            string[] teens = { "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen" };
-            string[] tens = { "ten", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety" };
-            var bigscales = new Dictionary<string, int>() {
-                {"hundred", 100},
-                {"hundreds", 100},
-                {"thousand", 1000},
-                {"million", 1000000},
-                {"billion", 1000000000}};
-            string[] minusWords = { "minus", "negative" };
-            var splitchars = new char[] { ' ', '-', ',' };
 
-            var lowercase = number.ToLower();
-            var inputwords = lowercase.Split(splitchars, StringSplitOptions.RemoveEmptyEntries);
-
-            int result = 0;
-            int currentResult = 0;
-            int bigMultiplierValue = 1;
-            bool bigMultiplierIsActive = false;
-            bool minusFlag = false;
-
-            foreach (string curword in inputwords)
-            {
-                // input words are either bigMultipler words or little words
-                //
-                if (bigscales.ContainsKey(curword))
-                {
-                    bigMultiplierValue *= bigscales[curword];
-                    bigMultiplierIsActive = true;
-                }
-
-                else
-                {
-                    // multiply the current result by the previous word bigMultiplier
-                    // and disable the big multiplier until next time
-                    if (bigMultiplierIsActive)
-                    {
-                        result += currentResult * bigMultiplierValue;
-                        currentResult = 0;
-                        bigMultiplierValue = 1; // reset the multiplier value
-                        bigMultiplierIsActive = false; // turn it off until next time
-                    }
-
-                    // translate the incoming text word to an integer
-                    int n;
-                    if ((n = Array.IndexOf(ones, curword) + 1) > 0)
-                    {
-                        currentResult += n;
-                    }
-                    else if ((n = Array.IndexOf(teens, curword) + 1) > 0)
-                    {
-                        currentResult += n + 10;
-                    }
-                    else if ((n = Array.IndexOf(tens, curword) + 1) > 0)
-                    {
-                        currentResult += n * 10;
-                    }
-                    // allow for negative words (like "minus") 
-                    else if (minusWords.Contains(curword))
-                    {
-                        minusFlag = true;
-                    }
-                    // allow for phrases like "zero 500" hours military time
-                    else if (curword == "zero")
-                    {
-                        continue;
-                    }
-                    // allow for text digits too, like "100 and 5"
-                    else if (int.TryParse(curword, out int tmp))
-                    {
-                        currentResult += tmp;
-                    }
-                    //else if (curword != "and")
-                    //{
-                    //    throw new ApplicationException("Expected a number: " + curword);
-                    //}
-                }
-            }
-
-            var final = result + currentResult * bigMultiplierValue;
-            if (minusFlag)
-                final *= -1;
-            return final;
-        }
 
     }
 }
